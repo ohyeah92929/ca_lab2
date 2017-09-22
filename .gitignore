@@ -259,3 +259,8 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/Debug/
+.settings/org.eclipse.cdt.managedbuilder.core.prefs
+.project
+.cproject
+.settings/language.settings.xml

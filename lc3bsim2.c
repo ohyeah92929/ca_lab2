@@ -1,7 +1,7 @@
 /*
     REFER TO THE SUBMISSION INSTRUCTION FOR DETAILS
 
-    Name 1: Full name of the first partner 
+    Name 1: Full name of the first partner
     Name 2: Full name of the second partner
     UTEID 1: UT EID of the first partner
     UTEID 2: UT EID of the second partner
@@ -48,10 +48,10 @@ void process_instruction();
 /* Main memory.                                                */
 /***************************************************************/
 /* MEMORY[A][0] stores the least significant byte of word at word address A
-   MEMORY[A][1] stores the most significant byte of word at word address A 
+   MEMORY[A][1] stores the most significant byte of word at word address A
 */
 
-#define WORDS_IN_MEM    0x08000 
+#define WORDS_IN_MEM    0x08000
 int MEMORY[WORDS_IN_MEM][2];
 
 /***************************************************************/
@@ -91,7 +91,7 @@ int INSTRUCTION_COUNT;
 /* Purpose   : Print out a list of commands                    */
 /*                                                             */
 /***************************************************************/
-void help() {                                                    
+void help() {
   printf("----------------LC-3b ISIM Help-----------------------\n");
   printf("go               -  run program to completion         \n");
   printf("run n            -  execute program for n instructions\n");
@@ -108,7 +108,7 @@ void help() {
 /* Purpose   : Execute a cycle                                 */
 /*                                                             */
 /***************************************************************/
-void cycle() {                                                
+void cycle() {
 
   process_instruction();
   CURRENT_LATCHES = NEXT_LATCHES;
@@ -122,7 +122,7 @@ void cycle() {
 /* Purpose   : Simulate the LC-3b for n cycles                 */
 /*                                                             */
 /***************************************************************/
-void run(int num_cycles) {                                      
+void run(int num_cycles) {
   int i;
 
   if (RUN_BIT == FALSE) {
@@ -148,7 +148,7 @@ void run(int num_cycles) {
 /* Purpose   : Simulate the LC-3b until HALTed                 */
 /*                                                             */
 /***************************************************************/
-void go() {                                                     
+void go() {
   if (RUN_BIT == FALSE) {
     printf("Can't simulate, Simulator is halted\n\n");
     return;
@@ -161,7 +161,7 @@ void go() {
   printf("Simulator halted\n\n");
 }
 
-/***************************************************************/ 
+/***************************************************************/
 /*                                                             */
 /* Procedure : mdump                                           */
 /*                                                             */
@@ -169,7 +169,7 @@ void go() {
 /*             output file.                                    */
 /*                                                             */
 /***************************************************************/
-void mdump(FILE * dumpsim_file, int start, int stop) {          
+void mdump(FILE * dumpsim_file, int start, int stop) {
   int address; /* this is a byte address */
 
   printf("\nMemory content [0x%.4x..0x%.4x] :\n", start, stop);
@@ -191,12 +191,12 @@ void mdump(FILE * dumpsim_file, int start, int stop) {
 /*                                                             */
 /* Procedure : rdump                                           */
 /*                                                             */
-/* Purpose   : Dump current register and bus values to the     */   
+/* Purpose   : Dump current register and bus values to the     */
 /*             output file.                                    */
 /*                                                             */
 /***************************************************************/
-void rdump(FILE * dumpsim_file) {                               
-  int k; 
+void rdump(FILE * dumpsim_file) {
+  int k;
 
   printf("\nCurrent register/bus values :\n");
   printf("-------------------------------------\n");
@@ -225,10 +225,10 @@ void rdump(FILE * dumpsim_file) {
 /*                                                             */
 /* Procedure : get_command                                     */
 /*                                                             */
-/* Purpose   : Read a command from standard input.             */  
+/* Purpose   : Read a command from standard input.             */
 /*                                                             */
 /***************************************************************/
-void get_command(FILE * dumpsim_file) {                         
+void get_command(FILE * dumpsim_file) {
   char buffer[20];
   int start, stop, cycles;
 
@@ -280,7 +280,7 @@ void get_command(FILE * dumpsim_file) {
 /* Purpose   : Zero out the memory array                       */
 /*                                                             */
 /***************************************************************/
-void init_memory() {                                           
+void init_memory() {
   int i;
 
   for (i=0; i < WORDS_IN_MEM; i++) {
@@ -296,7 +296,7 @@ void init_memory() {
 /* Purpose   : Load program and service routines into mem.    */
 /*                                                            */
 /**************************************************************/
-void load_program(char *program_filename) {                   
+void load_program(char *program_filename) {
   FILE * prog;
   int ii, word, program_base;
 
@@ -339,11 +339,11 @@ void load_program(char *program_filename) {
 /*                                                          */
 /* Procedure : initialize                                   */
 /*                                                          */
-/* Purpose   : Load machine language program                */ 
+/* Purpose   : Load machine language program                */
 /*             and set up initial state of the machine.     */
 /*                                                          */
 /************************************************************/
-void initialize(char *program_filename, int num_prog_files) { 
+void initialize(char *program_filename, int num_prog_files) {
   int i;
 
   init_memory();
@@ -351,9 +351,9 @@ void initialize(char *program_filename, int num_prog_files) {
     load_program(program_filename);
     while(*program_filename++ != '\0');
   }
-  CURRENT_LATCHES.Z = 1;  
+  CURRENT_LATCHES.Z = 1;
   NEXT_LATCHES = CURRENT_LATCHES;
-    
+
   RUN_BIT = TRUE;
 }
 
@@ -362,7 +362,7 @@ void initialize(char *program_filename, int num_prog_files) {
 /* Procedure : main                                            */
 /*                                                             */
 /***************************************************************/
-int main(int argc, char *argv[]) {                              
+int main(int argc, char *argv[]) {
   FILE * dumpsim_file;
 
   /* Error Checking */
@@ -383,7 +383,7 @@ int main(int argc, char *argv[]) {
 
   while (1)
     get_command(dumpsim_file);
-    
+
 }
 
 /***************************************************************/
@@ -408,13 +408,13 @@ int main(int argc, char *argv[]) {
 
 void process_instruction(){
   /*  function: process_instruction
-   *  
-   *    Process one instruction at a time  
+   *
+   *    Process one instruction at a time
    *       -Fetch one instruction
-   *       -Decode 
+   *       -Decode
    *       -Execute
    *       -Update NEXT_LATCHES
-   */     
+   */
 
 }
 
