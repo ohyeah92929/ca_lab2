@@ -234,7 +234,7 @@ void get_command(FILE * dumpsim_file) {
 
   printf("LC-3b-SIM> ");
 
-  scanf("%s", buffer);
+  scanf("%s", buffer);fgjsdfh
   printf("\n");
 
   switch(buffer[0]) {
