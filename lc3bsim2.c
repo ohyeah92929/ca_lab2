@@ -422,7 +422,8 @@ void isa_stw(int word);
 void isa_trap(int word);
 void isa_xor(int word);
 void isa_not_used(int word);
-int get_sext(int number, int size);
+int sext(int number, int size);
+void setCC(int result);
 
 void (*isa_ptr[NUM_OF_OPCODES]) (int) =
 		{	isa_br, /*0000*/
@@ -455,7 +456,7 @@ void process_instruction(){
 	int opcode = (ir >> 12) & 0xF;
 	isa_ptr[opcode](ir);
 }
-int get_sext(int number, int size) {
+int sext(int number, int size) {
 	int mask = 1 << (size - 1);
 	if (number & mask)
 	{
@@ -463,6 +464,21 @@ int get_sext(int number, int size) {
 		return -(~number + 1);
 	}
 	return number;
+}
+void setCC(int result)
+{
+	NEXT_LATCHES.N = 0;
+	NEXT_LATCHES.Z = 0;
+	NEXT_LATCHES.P = 0;
+	if (result == 0) {
+		NEXT_LATCHES.Z = 1;
+	}
+	else if (result > 0) {
+		NEXT_LATCHES.P = 1;
+	}
+	else {
+		NEXT_LATCHES.N = 1;
+	}
 }
 void isa_add(int word) {
 	int dr = (word >> 9) & 0x7;
@@ -476,8 +492,12 @@ void isa_add(int word) {
 	else
 	{
 		int imm5 = word & 0x1F;
-		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] + get_sext(imm5, 5);
+		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] + sext(imm5, 5);
 	}
+	setCC(NEXT_LATCHES.REGS[dr]);
+#ifdef DEBUG
+	printf("Add instruction 0x%x executed, result 0x%x is at register %d", word, NEXT_LATCHES.REGS[dr], dr);
+#endif
 }
 void isa_and(int word) {
 }
@@ -488,6 +508,15 @@ void isa_jmp(int word) {
 void isa_jsr(int word) {
 }
 void isa_ldb(int word) {
+	int dr = (word >> 9) & 0x7;
+	int baser = (word >> 6) & 0x7;
+	int boffset6 = word & 0x3F;
+	int mar = baser + sext(boffset6, 6);
+	NEXT_LATCHES.REGS[dr] = sext(MEMORY[mar >> 1][mar&1], 8);
+	setCC(NEXT_LATCHES.REGS[dr]);
+#ifdef DEBUG
+	printf("LDB instruction 0x%x executed, result 0x%x is at register %d", word, NEXT_LATCHES.REGS[dr], dr);
+#endif
 }
 void isa_ldw(int word) {
 }
