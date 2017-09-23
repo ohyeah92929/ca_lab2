@@ -496,7 +496,7 @@ void isa_add(int word) {
 	}
 	setCC(NEXT_LATCHES.REGS[dr]);
 #ifdef DEBUG
-	printf("Add instruction 0x%x executed, result 0x%x is at register %d", word, NEXT_LATCHES.REGS[dr], dr);
+	printf("Add instruction 0x%x executed, result 0x%x is at register %d\n", word, NEXT_LATCHES.REGS[dr], dr);
 #endif
 }
 void isa_and(int word) {
@@ -507,12 +507,15 @@ void isa_br(int word) { /* Check again */
 	int p = (word >> 9) & 0x1;
 	int offset9 = word & 0x01FF;
 
-	if ((n && CURRENT_LATCHES.N) || (z && CURRENT_LATCHES.Z)
-		|| (p && CURRENT_LATCHES.P))
+	if ((n == 1 && CURRENT_LATCHES.N == 1) || (z == 1 && CURRENT_LATCHES.Z == 1)
+		|| (p == 1 && CURRENT_LATCHES.P == 1))
 	{
 		int lshf = sext(offset9, 9) << 1;
 		NEXT_LATCHES.PC = CURRENT_LATCHES.PC + lshf;
 	}
+#ifdef DEBUG
+	printf("br instruction 0x%x executed, branched to address 0x%x\n", word, NEXT_LATCHES.PC);
+#endif
 }
 void isa_jmp(int word) {
 }
@@ -525,11 +528,18 @@ void isa_jsr(int word) { /* Check again */
 		int pcoffset11 = word & 0x7FF;
 		int lshf = sext(pcoffset11, 11) >> 1;
 		NEXT_LATCHES.PC = CURRENT_LATCHES.PC + lshf;
+#ifdef DEBUG
+		printf("jsr instruction 0x%x executed, jumped to address 0x%x\n", word, NEXT_LATCHES.PC);
+#endif
 	}
 	else /* JSRR */
 	{
 		int baser = (word >> 6) & 0x7;
-		NEXT_LATCHES.PC = baser;
+		NEXT_LATCHES.PC = CURRENT_LATCHES.REGS[baser];
+
+#ifdef DEBUG
+		printf("jsrr instruction 0x%x executed, jumped to address 0x%x, base register\n", word, NEXT_LATCHES.PC);
+#endif
 	}
 	NEXT_LATCHES.REGS[7] = temp;
 }
@@ -549,10 +559,13 @@ void isa_ldw(int word) { /* Check again */
 	int baser = (word >> 6) & 0x7;
 	int offset6 = word & 0x3F;
 	int lshf = sext(offset6, 6) << 1;
-	int mar = baser + lshf;
+	int mar = CURRENT_LATCHES.REGS[baser] + lshf;
 	
 	NEXT_LATCHES.REGS[dr] = MEMORY[mar >> 1][mar & 1];
 	setCC(NEXT_LATCHES.REGS[dr]);
+#ifdef DEBUG
+	printf("LDW instruction 0x%x executed, result 0x%x is at register %d", word, NEXT_LATCHES.REGS[dr], dr);
+#endif
 }
 void isa_lea(int word) {
 }
@@ -565,9 +578,12 @@ void isa_stb(int word) { /* Check again */
 	int sr = (word >> 9) & 0x7;
 	int baser = (word >> 6) & 0x7;
 	int boffset6 = word & 0x3F;
-	int mar = baser + sext(boffset6, 6);
+	int mar = CURRENT_LATCHES.REGS[baser] + sext(boffset6, 6);
 
 	MEMORY[mar >> 1][mar & 0x1] = sr & 0xFF;
+#ifdef DEBUG
+	printf("stb instruction 0x%x executed, result 0x%x is at memory MEM[%d][%d]", word, MEMORY[mar >> 1][mar & 0x1], mar >> 1, mar & 0x1);
+#endif
 }
 void isa_stw(int word) {
 }
@@ -577,6 +593,9 @@ void isa_trap(int word) { /* Check again */
 
 	NEXT_LATCHES.REGS[7] = CURRENT_LATCHES.PC;
 	NEXT_LATCHES.PC = MEMORY[mar >> 1][mar & 1];
+#ifdef DEBUG
+	printf("trap instruction 0x%x executed, branched to 0x%x", word, MEMORY[mar >> 1][mar & 0x1]);
+#endif
 }
 void isa_xor(int word) {
 }
