@@ -234,7 +234,7 @@ void get_command(FILE * dumpsim_file) {
 
   printf("LC-3b-SIM> ");
 
-  scanf("%s", buffer);fgjsdfh
+  scanf("%s", buffer);
   printf("\n");
 
   switch(buffer[0]) {
@@ -501,11 +501,37 @@ void isa_add(int word) {
 }
 void isa_and(int word) {
 }
-void isa_br(int word) {
+void isa_br(int word) { /* Check again */
+	int n = (word >> 11) & 0x1;
+	int z = (word >> 10) & 0x1;
+	int p = (word >> 9) & 0x1;
+	int offset9 = word & 0x01FF;
+
+	if ((n && CURRENT_LATCHES.N) || (z && CURRENT_LATCHES.Z)
+		|| (p && CURRENT_LATCHES.P))
+	{
+		int lshf = sext(offset9, 9) << 1;
+		NEXT_LATCHES.PC = CURRENT_LATCHES.PC + lshf;
+	}
 }
 void isa_jmp(int word) {
 }
-void isa_jsr(int word) {
+void isa_jsr(int word) { /* Check again */
+	int a = (word >> 11) & 0x01;
+	int temp = CURRENT_LATCHES.PC;
+
+	if(a == 1) /* JSR */
+	{
+		int pcoffset11 = word & 0x7FF;
+		int lshf = sext(pcoffset11, 11) >> 1;
+		NEXT_LATCHES.PC = CURRENT_LATCHES.PC + lshf;
+	}
+	else /* JSRR */
+	{
+		int baser = (word >> 6) & 0x7;
+		NEXT_LATCHES.PC = baser;
+	}
+	NEXT_LATCHES.REGS[7] = temp;
 }
 void isa_ldb(int word) {
 	int dr = (word >> 9) & 0x7;
@@ -518,19 +544,39 @@ void isa_ldb(int word) {
 	printf("LDB instruction 0x%x executed, result 0x%x is at register %d", word, NEXT_LATCHES.REGS[dr], dr);
 #endif
 }
-void isa_ldw(int word) {
+void isa_ldw(int word) { /* Check again */
+	int dr = (word >> 9) & 0x7;
+	int baser = (word >> 6) & 0x7;
+	int offset6 = word & 0x3F;
+	int lshf = sext(offset6, 6) << 1;
+	int mar = baser + lshf;
+	
+	NEXT_LATCHES.REGS[dr] = MEMORY[mar >> 1][mar & 1];
+	setCC(NEXT_LATCHES.REGS[dr]);
 }
 void isa_lea(int word) {
 }
 void isa_rti(int word) {
+	/* Do not need to implement RTI */
 }
 void isa_shf(int word) {
 }
-void isa_stb(int word) {
+void isa_stb(int word) { /* Check again */
+	int sr = (word >> 9) & 0x7;
+	int baser = (word >> 6) & 0x7;
+	int boffset6 = word & 0x3F;
+	int mar = baser + sext(boffset6, 6);
+
+	MEMORY[mar >> 1][mar & 0x1] = sr & 0xFF;
 }
 void isa_stw(int word) {
 }
-void isa_trap(int word) {
+void isa_trap(int word) { /* Check again */
+	int trapvect8 = word & 0xFF;
+	int mar = trapvect8 << 1;
+
+	NEXT_LATCHES.REGS[7] = CURRENT_LATCHES.PC;
+	NEXT_LATCHES.PC = MEMORY[mar >> 1][mar & 1];
 }
 void isa_xor(int word) {
 }
