@@ -538,6 +538,9 @@ void isa_br(int word) { /* Check again */
 void isa_jmp(int word) {
 	int baseR = (word >> 6) & 0x7;
 	NEXT_LATCHES.PC = CURRENT_LATCHES.REGS[baseR];
+#ifdef DEBUG
+		printf("JMP instruction 0x%x executed, unconditionally jumped to address 0x%x\n", word, NEXT_LATCHES.PC);
+#endif
 }
 void isa_jsr(int word) { /* Check again */
 	int a = (word >> 11) & 0x01;
@@ -592,6 +595,9 @@ void isa_lea(int word) {
 	int pcoffset9 = word & 0x1FF;
 	NEXT_LATCHES.REGS[dr] = NEXT_LATCHES.PC + (sext(pcoffset9, 9) << 1);
 	setCC(NEXT_LATCHES.REGS[dr]);
+#ifdef DEBUG
+	printf("LEA instruction 0x%x executed, result 0x%x is at register %d", word, NEXT_LATCHES.REGS[dr], dr);
+#endif
 }
 void isa_rti(int word) {
 	/* Do not need to implement RTI */
@@ -609,6 +615,9 @@ void isa_shf(int word) {
 		else
 			NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr] >> amount4; /*DR = RSHF(SR, amount4, SR[15]);*/
 	setCC(NEXT_LATCHES.REGS[dr]);
+#ifdef DEBUG
+	printf("SHF instruction 0x%x with type %d executed, result 0x%x is at register %d", word, sh_code, NEXT_LATCHES.REGS[dr], dr);
+#endif
 }
 void isa_stb(int word) { /* Check again */
 	int sr = (word >> 9) & 0x7;
