@@ -536,6 +536,8 @@ void isa_br(int word) { /* Check again */
 #endif
 }
 void isa_jmp(int word) {
+	int baseR = (word >> 6) & 0x7;
+	NEXT_LATCHES.PC = CURRENT_LATCHES.REGS[baseR];
 }
 void isa_jsr(int word) { /* Check again */
 	int a = (word >> 11) & 0x01;
