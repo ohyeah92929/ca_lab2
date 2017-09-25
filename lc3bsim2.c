@@ -597,6 +597,18 @@ void isa_rti(int word) {
 	/* Do not need to implement RTI */
 }
 void isa_shf(int word) {
+	int dr = (word >> 9) & 0x7;
+	int sr = (word >> 6) & 0x7;
+	int sh_code = (word >> 4) & 0x3;
+	int amount4 = word & 0xF;
+	if ((sh_code & 1) == 0) /* if (bit[4] == 0) */
+		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr] << amount4; /*DR = LSHF(SR, amount4);*/
+	else
+		if (sh_code == 1) /*if (bit[5] == 0)*/
+			NEXT_LATCHES.REGS[dr] = (CURRENT_LATCHES.REGS[sr] & 0xFFFF) >> amount4;/*DR = RSHF(SR, amount4, 0);*/
+		else
+			NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr] >> amount4; /*DR = RSHF(SR, amount4, SR[15]);*/
+	setCC(NEXT_LATCHES.REGS[dr]);
 }
 void isa_stb(int word) { /* Check again */
 	int sr = (word >> 9) & 0x7;
