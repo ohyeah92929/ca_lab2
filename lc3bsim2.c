@@ -539,20 +539,20 @@ void isa_jmp(int word) {
 	int baseR = (word >> 6) & 0x7;
 	NEXT_LATCHES.PC = CURRENT_LATCHES.REGS[baseR];
 #ifdef DEBUG
-		printf("JMP instruction 0x%x executed, unconditionally jumped to address 0x%x\n", word, NEXT_LATCHES.PC);
+		printf("JMP instruction 0x%04X executed, unconditionally jumped to address 0x%04X\n", word, NEXT_LATCHES.PC);
 #endif
 }
 void isa_jsr(int word) { /* Check again */
 	int a = (word >> 11) & 0x01;
-	int temp = CURRENT_LATCHES.PC;
+	int temp = NEXT_LATCHES.PC;
 
 	if(a == 1) /* JSR */
 	{
 		int pcoffset11 = word & 0x7FF;
-		int lshf = sext(pcoffset11, 11) >> 1;
-		NEXT_LATCHES.PC = CURRENT_LATCHES.PC + lshf;
+		int lshf = sext(pcoffset11, 11) << 1; /*LSHF(SEXT(PCoffset11), 1);*/
+		NEXT_LATCHES.PC = NEXT_LATCHES.PC + lshf;
 #ifdef DEBUG
-		printf("jsr instruction 0x%x executed, jumped to address 0x%x\n", word, NEXT_LATCHES.PC);
+		printf("JSR instruction 0x%04X executed, jumped to address 0x%04X\n", word, NEXT_LATCHES.PC);
 #endif
 	}
 	else /* JSRR */
@@ -561,7 +561,7 @@ void isa_jsr(int word) { /* Check again */
 		NEXT_LATCHES.PC = CURRENT_LATCHES.REGS[baser];
 
 #ifdef DEBUG
-		printf("jsrr instruction 0x%x executed, jumped to address 0x%x, base register\n", word, NEXT_LATCHES.PC);
+		printf("JSRR instruction 0x%04X executed, jumped to address 0x%04X, base register\n", word, NEXT_LATCHES.PC);
 #endif
 	}
 	NEXT_LATCHES.REGS[7] = temp;
