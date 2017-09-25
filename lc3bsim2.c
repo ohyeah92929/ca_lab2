@@ -529,10 +529,10 @@ void isa_br(int word) { /* Check again */
 		|| (p == 1 && CURRENT_LATCHES.P == 1))
 	{
 		int lshf = sext(offset9, 9) << 1;
-		NEXT_LATCHES.PC = CURRENT_LATCHES.PC + lshf;
+		NEXT_LATCHES.PC = NEXT_LATCHES.PC + lshf;
 	}
 #ifdef DEBUG
-	printf("br instruction 0x%x executed, branched to address 0x%x\n", word, NEXT_LATCHES.PC);
+	printf("BR instruction 0x%04X executed, branched to address 0x%04X\n", word, NEXT_LATCHES.PC);
 #endif
 }
 void isa_jmp(int word) {
