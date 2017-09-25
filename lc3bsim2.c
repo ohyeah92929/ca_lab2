@@ -490,6 +490,9 @@ void setCC(int result)
 	else {
 		NEXT_LATCHES.N = 1;
 	}
+#ifdef DEBUG
+	printf("Result from setCC N=%d, Z=%d, P=%d\n", CURRENT_LATCHES.N, CURRENT_LATCHES.Z, CURRENT_LATCHES.P);
+#endif
 }
 void isa_add(int word) {
 	int dr = (word >> 9) & 0x7;
@@ -534,15 +537,20 @@ void isa_br(int word) { /* Check again */
 	int z = (word >> 10) & 0x1;
 	int p = (word >> 9) & 0x1;
 	int offset9 = word & 0x01FF;
+	int ben = 0;
 
 	if ((n == 1 && CURRENT_LATCHES.N == 1) || (z == 1 && CURRENT_LATCHES.Z == 1)
 		|| (p == 1 && CURRENT_LATCHES.P == 1))
 	{
+		ben = 1;
 		int lshf = sext(offset9, 9) << 1;
 		NEXT_LATCHES.PC = NEXT_LATCHES.PC + lshf;
 	}
 #ifdef DEBUG
-	printf("BR instruction 0x%04X executed, branched to address 0x%04X\n", word, NEXT_LATCHES.PC);
+	if (ben)
+		printf("BR instruction 0x%04X executed, branched to address 0x%04X\n", word, NEXT_LATCHES.PC);
+	else
+		printf("BR instruction 0x%04X not taken, N=%d, Z=%d, P=%d\n", word, CURRENT_LATCHES.N, CURRENT_LATCHES.Z, CURRENT_LATCHES.P);
 #endif
 }
 void isa_jmp(int word) {
