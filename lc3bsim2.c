@@ -381,8 +381,8 @@ int main(int argc, char *argv[]) {
     exit(-1);
   }
 
-  //while (1)
-    //get_command(dumpsim_file);
+  /*while (1)
+      get_command(dumpsim_file);*/
 	  go();
   	  mdump(dumpsim_file, 0x3000, 0x3100);
   	  rdump(dumpsim_file);
