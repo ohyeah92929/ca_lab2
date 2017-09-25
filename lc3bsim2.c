@@ -571,7 +571,7 @@ void isa_ldw(int word) { /* Check again */
 void isa_lea(int word) {
 	int dr = (word >> 9) & 0x7;
 	int pcoffset9 = word & 0x1FF;
-	NEXT_LATCHES.REGS[dr] = NEXT_LATCHES.PC + (sext(pcoffset9) << 1);
+	NEXT_LATCHES.REGS[dr] = NEXT_LATCHES.PC + (sext(pcoffset9, 9) << 1);
 	setCC(NEXT_LATCHES.REGS[dr]);
 }
 void isa_rti(int word) {
