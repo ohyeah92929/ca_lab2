@@ -616,7 +616,7 @@ void isa_stb(int word) { /* Check again */
 	int boffset6 = word & 0x3F;
 	int mar = CURRENT_LATCHES.REGS[baser] + sext(boffset6, 6);
 
-	MEMORY[mar >> 1][mar & 0x1] = sr & 0xFF;
+	MEMORY[mar >> 1][mar & 0x1] = CURRENT_LATCHES.REGS[sr] & 0xFF;
 #ifdef DEBUG
 	printf("stb instruction 0x%x executed, result 0x%x is at memory MEM[%d][%d]", word, MEMORY[mar >> 1][mar & 0x1], mar >> 1, mar & 0x1);
 #endif
