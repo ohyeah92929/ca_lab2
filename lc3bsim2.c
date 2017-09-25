@@ -491,7 +491,7 @@ void setCC(int result)
 		NEXT_LATCHES.N = 1;
 	}
 #ifdef DEBUG
-	printf("Result from setCC N=%d, Z=%d, P=%d\n", CURRENT_LATCHES.N, CURRENT_LATCHES.Z, CURRENT_LATCHES.P);
+	printf("Result from setCC N=%d, Z=%d, P=%d\n", NEXT_LATCHES.N, NEXT_LATCHES.Z, NEXT_LATCHES.P);
 #endif
 }
 void isa_add(int word) {
