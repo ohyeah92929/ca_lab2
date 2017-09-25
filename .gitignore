@@ -265,3 +265,5 @@ __pycache__/
 .cproject
 .settings/language.settings.xml
 /dumpsim
+test/br_st
+test/f1

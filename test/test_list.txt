@@ -1,0 +1,1 @@
+f1.asm golden/f1.txt in_cmd.txt
