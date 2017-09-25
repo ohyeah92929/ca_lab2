@@ -454,6 +454,7 @@ void process_instruction(){
    */
 	int ir = ((MEMORY[CURRENT_LATCHES.PC>>1][1] & 0xFF) << 16) | (MEMORY[CURRENT_LATCHES.PC>>1][0] & 0xFF);
 	int opcode = (ir >> 12) & 0xF;
+	NEXT_LATCHES.PC = CURRENT_LATCHES.PC + 2;
 	isa_ptr[opcode](ir);
 }
 int sext(int number, int size) {
@@ -568,6 +569,7 @@ void isa_ldw(int word) { /* Check again */
 #endif
 }
 void isa_lea(int word) {
+
 }
 void isa_rti(int word) {
 	/* Do not need to implement RTI */
