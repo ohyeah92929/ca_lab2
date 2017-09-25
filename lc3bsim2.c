@@ -458,11 +458,21 @@ void process_instruction(){
 	isa_ptr[opcode](ir);
 }
 int sext(int number, int size) {
-	int mask = 1 << (size - 1);
-	if (number & mask)
+	int sign_mask = 1 << (size - 1);
+	int bit_mask = 1, i;
+	for (i = 1; i < size; i++)
+	{
+		bit_mask <<= 1;
+		bit_mask |= 1;
+	}
+	if (number & sign_mask)
 	{
 		/*If it's negative, return the sign extended value*/
-		return -(~number + 1);
+		int result = -(((~number) & bit_mask) + 1);
+#ifdef DEBUG
+	printf("Result from sign extending 0x%x of size %d bits is 0x%x\n", number, size, result);
+#endif
+		return result;
 	}
 	return number;
 }
