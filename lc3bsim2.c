@@ -452,7 +452,7 @@ void process_instruction(){
    *       -Execute
    *       -Update NEXT_LATCHES
    */
-	int ir = ((MEMORY[CURRENT_LATCHES.PC>>1][1] & 0xFF) << 16) | (MEMORY[CURRENT_LATCHES.PC>>1][0] & 0xFF);
+	int ir = ((MEMORY[CURRENT_LATCHES.PC>>1][1] & 0xFF) << 8) | (MEMORY[CURRENT_LATCHES.PC>>1][0] & 0xFF);
 	int opcode = (ir >> 12) & 0xF;
 	NEXT_LATCHES.PC = CURRENT_LATCHES.PC + 2;
 	isa_ptr[opcode](ir);
