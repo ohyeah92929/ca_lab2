@@ -649,10 +649,27 @@ void isa_trap(int word) { /* Check again */
 	NEXT_LATCHES.REGS[7] = CURRENT_LATCHES.PC;
 	NEXT_LATCHES.PC = (MEMORY[mar >> 1][1] << 8) | MEMORY[mar >> 1][0];
 #ifdef DEBUG
-	printf("trap instruction 0x%x executed, branched to 0x%x", word, MEMORY[mar >> 1][mar & 0x1]);
+	printf("TRAP instruction 0x%04X executed, PC pointing to to 0x%04X", word, NEXT_LATCHES.PC);
 #endif
 }
 void isa_xor(int word) {
+	int dr = (word >> 9) & 0x7;
+	int sr1 = (word >> 6) & 0x7;
+	int a = (word >> 5) & 0x1;
+	if (a == 0)
+	{
+		int sr2 = word & 0x7;
+		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] ^ CURRENT_LATCHES.REGS[sr2];
+	}
+	else
+	{
+		int imm5 = word & 0x1F;
+		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] ^ sext(imm5, 5);
+	}
+	setCC(NEXT_LATCHES.REGS[dr]);
+#ifdef DEBUG
+	printf("XOR instruction 0x%04X executed, result 0x%04X is at register %d\n", word, NEXT_LATCHES.REGS[dr], dr);
+#endif
 }
 void isa_not_used(int word) {
 }
