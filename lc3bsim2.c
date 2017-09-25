@@ -561,7 +561,7 @@ void isa_ldw(int word) { /* Check again */
 	int lshf = sext(offset6, 6) << 1;
 	int mar = CURRENT_LATCHES.REGS[baser] + lshf;
 	
-	NEXT_LATCHES.REGS[dr] = MEMORY[mar >> 1][mar & 1];
+	NEXT_LATCHES.REGS[dr] = (MEMORY[mar >> 1][1] << 8) | MEMORY[mar >> 1][0];
 	setCC(NEXT_LATCHES.REGS[dr]);
 #ifdef DEBUG
 	printf("LDW instruction 0x%x executed, result 0x%x is at register %d", word, NEXT_LATCHES.REGS[dr], dr);
