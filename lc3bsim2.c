@@ -497,10 +497,27 @@ void isa_add(int word) {
 	}
 	setCC(NEXT_LATCHES.REGS[dr]);
 #ifdef DEBUG
-	printf("Add instruction 0x%x executed, result 0x%x is at register %d\n", word, NEXT_LATCHES.REGS[dr], dr);
+	printf("ADD instruction 0x%x executed, result 0x%x is at register %d\n", word, NEXT_LATCHES.REGS[dr], dr);
 #endif
 }
 void isa_and(int word) {
+	int dr = (word >> 9) & 0x7;
+	int sr1 = (word >> 6) & 0x7;
+	int a = (word >> 5) & 0x1;
+	if (a == 0)
+	{
+		int sr2 = word & 0x7;
+		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] & CURRENT_LATCHES.REGS[sr2];
+	}
+	else
+	{
+		int imm5 = word & 0x1F;
+		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] & sext(imm5, 5);
+	}
+	setCC(NEXT_LATCHES.REGS[dr]);
+#ifdef DEBUG
+	printf("AND instruction 0x%x executed, result 0x%x is at register %d\n", word, NEXT_LATCHES.REGS[dr], dr);
+#endif
 }
 void isa_br(int word) { /* Check again */
 	int n = (word >> 11) & 0x1;
