@@ -1,0 +1,4 @@
+go
+mdump 0x3000 0x3052
+rdump
+q
