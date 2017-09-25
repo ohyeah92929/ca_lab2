@@ -553,7 +553,7 @@ void isa_ldb(int word) {
 	int dr = (word >> 9) & 0x7;
 	int baser = (word >> 6) & 0x7;
 	int boffset6 = word & 0x3F;
-	int mar = baser + sext(boffset6, 6);
+	int mar = CURRENT_LATCHES.REGS[baser] + sext(boffset6, 6);
 	NEXT_LATCHES.REGS[dr] = sext(MEMORY[mar >> 1][mar&1], 8);
 	setCC(NEXT_LATCHES.REGS[dr]);
 #ifdef DEBUG
