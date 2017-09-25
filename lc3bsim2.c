@@ -627,10 +627,20 @@ void isa_stb(int word) { /* Check again */
 
 	MEMORY[mar >> 1][mar & 0x1] = CURRENT_LATCHES.REGS[sr] & 0xFF;
 #ifdef DEBUG
-	printf("stb instruction 0x%x executed, result 0x%x is at memory MEM[%d][%d]", word, MEMORY[mar >> 1][mar & 0x1], mar >> 1, mar & 0x1);
+	printf("STB instruction 0x%04X executed, result 0x%02X is at memory MEM[%d][%d]", word, MEMORY[mar >> 1][mar & 0x1], mar >> 1, mar & 0x1);
 #endif
 }
 void isa_stw(int word) {
+	int sr = (word >> 9) & 0x7;
+	int baser = (word >> 6) & 0x7;
+	int boffset6 = word & 0x3F;
+	int mar = CURRENT_LATCHES.REGS[baser] + (sext(boffset6, 6) << 1);
+
+	MEMORY[mar >> 1][0] = CURRENT_LATCHES.REGS[sr] & 0xFF;
+	MEMORY[mar >> 1][1] = (CURRENT_LATCHES.REGS[sr] >> 8) & 0xFF;
+#ifdef DEBUG
+	printf("STW instruction 0x%04X executed, high byte 0x%02X and low byte 0x%02X are at memory MEM[%d]", word, MEMORY[mar >> 1][1], MEMORY[mar >> 1][0], mar >> 1);
+#endif
 }
 void isa_trap(int word) { /* Check again */
 	int trapvect8 = word & 0xFF;
