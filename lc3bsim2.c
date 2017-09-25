@@ -672,5 +672,9 @@ void isa_xor(int word) {
 #endif
 }
 void isa_not_used(int word) {
+	/*TODO: What are we supposed to do when this case happens?*/
+#ifdef DEBUG
+	printf("Reserved opcode for instruction 0x%04X\n", word);
+#endif
 }
 
