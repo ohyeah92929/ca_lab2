@@ -664,7 +664,7 @@ void isa_trap(int word) { /* Check again */
 	int trapvect8 = word & 0xFF;
 	int mar = trapvect8 << 1;
 
-	NEXT_LATCHES.REGS[7] = CURRENT_LATCHES.PC;
+	NEXT_LATCHES.REGS[7] = NEXT_LATCHES.PC;
 	NEXT_LATCHES.PC = (MEMORY[mar >> 1][1] << 8) | MEMORY[mar >> 1][0];
 #ifdef DEBUG
 	printf("TRAP instruction 0x%04X executed, PC pointing to to 0x%04X\n", word, NEXT_LATCHES.PC);
