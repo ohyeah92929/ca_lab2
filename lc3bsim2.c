@@ -478,6 +478,7 @@ int sext(int number, int size) {
 }
 void setCC(int result)
 {
+	result = sext(result, 16);
 	NEXT_LATCHES.N = 0;
 	NEXT_LATCHES.Z = 0;
 	NEXT_LATCHES.P = 0;
@@ -506,8 +507,9 @@ void isa_add(int word) {
 	else
 	{
 		int imm5 = word & 0x1F;
-		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] + sext(imm5, 5);
+		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] + (sext(imm5, 5) & 0xFFFF);
 	}
+	NEXT_LATCHES.REGS[dr] &= 0xFFFF;
 	setCC(NEXT_LATCHES.REGS[dr]);
 #ifdef DEBUG
 	printf("ADD instruction 0x%x executed, result 0x%x is at register %d\n", word, NEXT_LATCHES.REGS[dr], dr);
@@ -525,8 +527,9 @@ void isa_and(int word) {
 	else
 	{
 		int imm5 = word & 0x1F;
-		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] & sext(imm5, 5);
+		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] & (sext(imm5, 5) & 0xFFFF);
 	}
+	NEXT_LATCHES.REGS[dr] &= 0xFFFF;
 	setCC(NEXT_LATCHES.REGS[dr]);
 #ifdef DEBUG
 	printf("AND instruction 0x%x executed, result 0x%x is at register %d\n", word, NEXT_LATCHES.REGS[dr], dr);
@@ -590,6 +593,7 @@ void isa_ldb(int word) {
 	int boffset6 = word & 0x3F;
 	int mar = CURRENT_LATCHES.REGS[baser] + sext(boffset6, 6);
 	NEXT_LATCHES.REGS[dr] = sext(MEMORY[mar >> 1][mar&1], 8);
+	NEXT_LATCHES.REGS[dr] &= 0xFFFF;
 	setCC(NEXT_LATCHES.REGS[dr]);
 #ifdef DEBUG
 	printf("LDB instruction 0x%04X executed, result 0x%04X is at register %d\n", word, NEXT_LATCHES.REGS[dr], dr);
@@ -603,6 +607,7 @@ void isa_ldw(int word) { /* Check again */
 	int mar = CURRENT_LATCHES.REGS[baser] + lshf;
 	
 	NEXT_LATCHES.REGS[dr] = (MEMORY[mar >> 1][1] << 8) | MEMORY[mar >> 1][0];
+	NEXT_LATCHES.REGS[dr] &= 0xFFFF;
 	setCC(NEXT_LATCHES.REGS[dr]);
 #ifdef DEBUG
 	printf("LDW instruction 0x%04X executed, result 0x%04X is at register %d\n", word, NEXT_LATCHES.REGS[dr], dr);
@@ -612,6 +617,7 @@ void isa_lea(int word) {
 	int dr = (word >> 9) & 0x7;
 	int pcoffset9 = word & 0x1FF;
 	NEXT_LATCHES.REGS[dr] = NEXT_LATCHES.PC + (sext(pcoffset9, 9) << 1);
+	NEXT_LATCHES.REGS[dr] &= 0xFFFF;
 	setCC(NEXT_LATCHES.REGS[dr]);
 #ifdef DEBUG
 	printf("LEA instruction 0x%04X executed, result 0x%04X is at register %d\n", word, NEXT_LATCHES.REGS[dr], dr);
@@ -631,7 +637,8 @@ void isa_shf(int word) {
 		if (sh_code == 1) /*if (bit[5] == 0)*/
 			NEXT_LATCHES.REGS[dr] = (CURRENT_LATCHES.REGS[sr] & 0xFFFF) >> amount4;/*DR = RSHF(SR, amount4, 0);*/
 		else
-			NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr] >> amount4; /*DR = RSHF(SR, amount4, SR[15]);*/
+			NEXT_LATCHES.REGS[dr] = sext(CURRENT_LATCHES.REGS[sr],16) >> amount4; /*DR = RSHF(SR, amount4, SR[15]);*/
+	NEXT_LATCHES.REGS[dr] &= 0xFFFF;
 	setCC(NEXT_LATCHES.REGS[dr]);
 #ifdef DEBUG
 	printf("SHF instruction 0x%04X with type %d executed, result 0x%04X is at register %d\n", word, sh_code, NEXT_LATCHES.REGS[dr], dr);
@@ -682,8 +689,9 @@ void isa_xor(int word) {
 	else
 	{
 		int imm5 = word & 0x1F;
-		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] ^ sext(imm5, 5);
+		NEXT_LATCHES.REGS[dr] = CURRENT_LATCHES.REGS[sr1] ^ (sext(imm5, 5) & 0xFFFF);
 	}
+	NEXT_LATCHES.REGS[dr] &= 0xFFFF;
 	setCC(NEXT_LATCHES.REGS[dr]);
 #ifdef DEBUG
 	printf("XOR instruction 0x%04X executed, result 0x%04X is at register %d\n", word, NEXT_LATCHES.REGS[dr], dr);
